@@ -1,0 +1,34 @@
+{
+  "medicos": {
+    "12345678": {
+      "nombre": "Dr. Juan Pérez",
+      "especialidad": "Cardiología"
+    },
+    "87654321": {
+      "nombre": "Dra. Ana Gómez",
+      "especialidad": "Dermatología"
+    },
+    "73038275": {
+      "nombre": "Dr. Cesar Camero",
+      "especialidad": "Nutricionista"
+    },
+    "98765432": {
+      "nombre": "Dr. Juan Lizama",
+      "especialidad": "Odontología"
+    }
+  },
+  "directivos": {
+    "11223344": {
+      "nombre": "Sr. Carlos López",
+      "cargo": "Director General"
+    },
+    "22334455": {
+      "nombre": "Sra. María Fernández",
+      "cargo": "Gerente Financiera"
+    },
+    "33445566": {
+      "nombre": "Sr. Ricardo Martínez",
+      "cargo": "Gerente de Operaciones"
+    }
+  }
+}
