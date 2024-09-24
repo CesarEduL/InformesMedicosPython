@@ -84,8 +84,8 @@ def lista_informes():
     if 'dni_medico' not in session:
         return redirect(url_for('login'))
     
-    # Obtener todos los informes del médico actual
-    informes = db_firestore.collection('pacientes').where('dni_medico', '==', session['dni_medico']).stream()
+    # Obtain all reports for the current doctor
+    informes = list(db_firestore.collection('pacientes').where('dni_medico', '==', session['dni_medico']).stream())
     lista_informes = [{**informe.to_dict(), 'id': informe.id} for informe in informes]
     
     return render_template('lista_informes.html', informes=lista_informes)
