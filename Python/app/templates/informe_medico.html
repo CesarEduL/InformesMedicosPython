@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Informe Médico{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+        <h2 class="text-2xl leading-6 font-medium text-gray-900">Informe Médico</h2>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Bienvenido, Dr. {{ nombre_medico }}</p>
+    </div>
+    <div class="border-t border-gray-200">
+        <form id="informeForm" class="px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-6 gap-6">
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="dni_paciente" class="block text-sm font-medium text-gray-700">DNI del Paciente:</label>
+                    <input type="text" id="dni_paciente" name="dni_paciente" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="nombre_paciente" class="block text-sm font-medium text-gray-700">Nombre del Paciente:</label>
+                    <input type="text" id="nombre_paciente" name="nombre_paciente" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                </div>
+                <div class="col-span-6">
+                    <button type="button" id="autocompletarNombre" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Autocompletar Nombre
+                    </button>
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="diagnostico" class="block text-sm font-medium text-gray-700">Diagnóstico:</label>
+                    <input type="text" id="diagnostico" name="diagnostico" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="tratamiento" class="block text-sm font-medium text-gray-700">Tratamiento:</label>
+                    <input type="text" id="tratamiento" name="tratamiento" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                </div>
+                <div class="col-span-6">
+                    <label for="informe" class="block text-sm font-medium text-gray-700">Informe Médico:</label>
+                    <textarea id="informe" name="informe" rows="10" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
+                </div>
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Guardar Informe
+                </button>
+            </div>
+        </form>
+    </div>
+    <div id="mensaje" class="px-4 py-5 sm:px-6 text-green-600 font-medium"></div>
+</div>
+{% endblock %}

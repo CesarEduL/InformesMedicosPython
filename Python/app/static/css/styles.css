@@ -1,0 +1,47 @@
+/* Estilos personalizados que complementan Tailwind */
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.custom-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.custom-transition {
+    transition: all 0.3s ease;
+}
+
+.custom-hover:hover {
+    transform: translateY(-2px);
+}
+
+/* Animación para mensajes de éxito */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Estilo para el encabezado */
+header {
+    background: linear-gradient(90deg, #4a90e2, #63b3ed);
+}
+
+/* Estilo para el pie de página */
+footer {
+    background: linear-gradient(90deg, #2d3748, #4a5568);
+}
+
+/* Estilo para los botones */
+button {
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
