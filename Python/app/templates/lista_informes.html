@@ -40,6 +40,9 @@
                                 Borrar
                             </button>
                         </form>
+                        <a href="{{ url_for('generar_pdf', dni_paciente=informe.dni_paciente) }}" class="ml-4 font-medium text-green-600 hover:text-green-500">
+                            Generar PDF
+                        </a>
                     </div>
                 </div>
             </li>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
 from modules.firebase_module import inicializar_firebase, obtener_firestore, verificar_dni_medico
 from modules.api_module import cargar_token, obtener_nombre_paciente
 from modules.pdf_module import crear_pdf
@@ -143,6 +143,35 @@ def borrar_informe(dni_paciente):
     ref.delete()
     flash('Informe borrado exitosamente', 'success')
     return redirect(url_for('lista_informes'))
+
+
+@app.route('/generar_pdf/<string:dni_paciente>')
+def generar_pdf(dni_paciente):
+    if 'nombre_medico' not in session:
+        return redirect(url_for('login'))
+
+    # Obtener los datos del informe desde Firestore
+    ref = db_firestore.collection('pacientes').document(dni_paciente)
+    informe = ref.get()
+
+    if not informe.exists:
+        flash('Informe no encontrado', 'error')
+        return redirect(url_for('lista_informes'))
+
+    informe_data = informe.to_dict()
+
+    # Crear el PDF
+    pdf_file_name = crear_pdf(
+        informe_data['dni_paciente'],
+        informe_data['nombre_paciente'],
+        informe_data['informe'],
+        informe_data['diagnostico'],
+        informe_data['tratamiento'],
+        informe_data['medico']
+    )
+
+    # Enviar el archivo PDF al navegador
+    return send_file(pdf_file_name, as_attachment=True)
 
 @app.route('/autocompletar_nombre', methods=['POST'])
 def autocompletar_nombre():
