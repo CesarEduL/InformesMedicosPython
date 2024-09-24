@@ -1,2 +1,3 @@
 Python/app/config/
-Python/env
+env/
+__pycache__/
