@@ -127,6 +127,23 @@ def editar_informe(dni_paciente):
     return render_template('editar_informe.html', informe=informe.to_dict(), dni_paciente=dni_paciente)
 
 
+@app.route('/borrar_informe/<string:dni_paciente>', methods=['POST'])
+def borrar_informe(dni_paciente):
+    if 'nombre_medico' not in session:
+        return redirect(url_for('login'))
+
+    ref = db_firestore.collection('pacientes').document(dni_paciente)
+    informe = ref.get()
+
+    if not informe.exists:
+        flash('Informe no encontrado', 'error')
+        return redirect(url_for('lista_informes'))
+
+    # Borrar el informe
+    ref.delete()
+    flash('Informe borrado exitosamente', 'success')
+    return redirect(url_for('lista_informes'))
+
 @app.route('/autocompletar_nombre', methods=['POST'])
 def autocompletar_nombre():
     dni_paciente = request.form['dni_paciente']
