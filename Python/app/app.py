@@ -15,11 +15,13 @@ db_firestore = obtener_firestore()
 # Cargar token API
 API_TOKEN = cargar_token()
 
+
 @app.route('/')
 def index():
     if 'nombre_medico' in session:
         return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -35,11 +37,13 @@ def login():
             flash('DNI no encontrado en el sistema', 'error')
     return render_template('login.html')
 
+
 @app.route('/logout')
 def logout():
     session.clear()
     flash('Has cerrado sesión correctamente', 'success')
     return redirect(url_for('login'))
+
 
 @app.route('/dashboard')
 def dashboard():
@@ -47,11 +51,12 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('dashboard.html', nombre_medico=session['nombre_medico'])
 
+
 @app.route('/informe_medico', methods=['GET', 'POST'])
 def informe_medico():
     if 'nombre_medico' not in session:
         return redirect(url_for('login'))
-    
+
     if request.method == 'POST':
         dni_paciente = request.form['dni_paciente']
         nombre_paciente = request.form['nombre_paciente']
@@ -73,35 +78,40 @@ def informe_medico():
         })
 
         # Crear el PDF
-        pdf_file_name = crear_pdf(dni_paciente, nombre_paciente, informe_texto, diagnostico, tratamiento, session['nombre_medico'])
+        pdf_file_name = crear_pdf(dni_paciente, nombre_paciente, informe_texto,
+                                  diagnostico, tratamiento, session['nombre_medico'])
 
         return jsonify({'message': 'Informe guardado exitosamente', 'pdf_file': pdf_file_name})
 
     return render_template('informe_medico.html', nombre_medico=session['nombre_medico'])
 
+
 @app.route('/lista_informes')
 def lista_informes():
     if 'dni_medico' not in session:
         return redirect(url_for('login'))
-    
-    # Obtain all reports for the current doctor
-    informes = list(db_firestore.collection('pacientes').where('dni_medico', '==', session['dni_medico']).stream())
-    lista_informes = [{**informe.to_dict(), 'id': informe.id} for informe in informes]
-    
+
+    # Obtener todos los informes del médico actual
+    informes = db_firestore.collection('pacientes').where(
+        'dni_medico', '==', session['dni_medico']).stream()
+    lista_informes = [{**informe.to_dict(), 'id': informe.id}
+                      for informe in informes]
+
     return render_template('lista_informes.html', informes=lista_informes)
+
 
 @app.route('/editar_informe/<string:dni_paciente>', methods=['GET', 'POST'])
 def editar_informe(dni_paciente):
     if 'nombre_medico' not in session:
         return redirect(url_for('login'))
-    
+
     ref = db_firestore.collection('pacientes').document(dni_paciente)
     informe = ref.get()
-    
+
     if not informe.exists:
         flash('Informe no encontrado', 'error')
         return redirect(url_for('lista_informes'))
-    
+
     if request.method == 'POST':
         # Actualizar el informe
         ref.update({
@@ -113,8 +123,9 @@ def editar_informe(dni_paciente):
         })
         flash('Informe actualizado exitosamente', 'success')
         return redirect(url_for('lista_informes'))
-    
+
     return render_template('editar_informe.html', informe=informe.to_dict(), dni_paciente=dni_paciente)
+
 
 @app.route('/autocompletar_nombre', methods=['POST'])
 def autocompletar_nombre():
@@ -125,6 +136,6 @@ def autocompletar_nombre():
     else:
         return jsonify({'error': 'No se pudo autocompletar el nombre o DNI no encontrado'}), 400
 
+
 if __name__ == '__main__':
     app.run(debug=True)
-    
