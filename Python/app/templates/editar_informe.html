@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Informe Médico{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+        <h2 class="text-2xl leading-6 font-medium text-gray-900">Editar Informe Médico</h2>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Paciente: {{ informe.nombre_paciente }}</p>
+    </div>
+    <div class="border-t border-gray-200">
+        <form id="editarInformeForm" method="POST" class="px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-6 gap-6">
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="dni_paciente" class="block text-sm font-medium text-gray-700">DNI del Paciente:</label>
+                    <input type="text" id="dni_paciente" name="dni_paciente" value="{{ dni_paciente }}" readonly class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-100">
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="nombre_paciente" class="block text-sm font-medium text-gray-700">Nombre del Paciente:</label>
+                    <input type="text" id="nombre_paciente" name="nombre_paciente" value="{{ informe.nombre_paciente }}" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="diagnostico" class="block text-sm font-medium text-gray-700">Diagnóstico:</label>
+                    <input type="text" id="diagnostico" name="diagnostico" value="{{ informe.diagnostico }}" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                </div>
+                <div class="col-span-6 sm:col-span-3">
+                    <label for="tratamiento" class="block text-sm font-medium text-gray-700">Tratamiento:</label>
+                    <input type="text" id="tratamiento" name="tratamiento" value="{{ informe.tratamiento }}" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                </div>
+                <div class="col-span-6">
+                    <label for="informe" class="block text-sm font-medium text-gray-700">Informe Médico:</label>
+                    <textarea id="informe" name="informe" rows="10" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">{{ informe.informe }}</textarea>
+                </div>
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="mt-4 text-right">
+    <a href="{{ url_for('lista_informes') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Volver a la lista
+    </a>
+</div>
+{% endblock %}

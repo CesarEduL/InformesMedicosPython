@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+        <h2 class="text-2xl leading-6 font-medium text-gray-900">Dashboard</h2>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">Bienvenido, Dr. {{ nombre_medico }}</p>
+    </div>
+    <div class="border-t border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                    <a href="{{ url_for('informe_medico') }}" class="block p-6 bg-blue-100 hover:bg-blue-200 rounded-lg transition duration-300">
+                        <h3 class="text-lg leading-6 font-medium text-blue-900">Nuevo Informe Médico</h3>
+                        <p class="mt-2 text-sm text-blue-700">Crear un nuevo informe médico para un paciente.</p>
+                    </a>
+                </div>
+                <div>
+                    <a href="{{ url_for('lista_informes') }}" class="block p-6 bg-green-100 hover:bg-green-200 rounded-lg transition duration-300">
+                        <h3 class="text-lg leading-6 font-medium text-green-900">Lista de Informes</h3>
+                        <p class="mt-2 text-sm text-green-700">Ver y editar informes médicos existentes.</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mt-4 text-right">
+    <a href="{{ url_for('logout') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+        Cerrar Sesión
+    </a>
+</div>
+{% endblock %}
