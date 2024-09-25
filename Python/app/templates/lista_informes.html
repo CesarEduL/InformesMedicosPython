@@ -8,45 +8,66 @@
         <h2 class="text-2xl leading-6 font-medium text-gray-900">Lista de Informes Médicos</h2>
         <p class="mt-1 max-w-2xl text-sm text-gray-500">Informes creados por Dr. {{ session['nombre_medico'] }}</p>
     </div>
+    <!-- Formulario de búsqueda por DNI -->
+    <form method="GET" action="{{ url_for('lista_informes') }}">
+        <div class="px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200">
+            <label for="dni_paciente" class="block text-sm font-medium text-gray-700">Buscar por DNI</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+                <input type="text" name="dni_paciente" id="dni_paciente" class="block w-full pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="Ingrese número de DNI" value="{{ request.args.get('dni_paciente', '') }}">
+                <button type="submit" class="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17.65 10.65A7.5 7.5 0 1110.65 3 7.5 7.5 0 0117.65 10.65z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </form>
+
     <div class="border-t border-gray-200">
         <ul class="divide-y divide-gray-200">
-            {% for informe in informes %}
-            <li class="px-4 py-4 sm:px-6">
-                <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-indigo-600 truncate">
-                        {{ informe.nombre_paciente }}
-                    </p>
-                    <div class="ml-2 flex-shrink-0 flex">
-                        <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            {{ informe.fecha }}
+            {% if informes %}
+                {% for informe in informes %}
+                <li class="px-4 py-4 sm:px-6 hover:bg-gray-50 transition duration-150 ease-in-out">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-medium text-indigo-600 truncate">
+                            {{ informe.nombre_paciente }}
                         </p>
+                        <div class="ml-2 flex-shrink-0 flex">
+                            <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                {{ informe.fecha }}
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div class="mt-2 sm:flex sm:justify-between">
-                    <div class="sm:flex">
-                        <p class="flex items-center text-sm text-gray-500">
-                            DNI: {{ informe.dni_paciente }}
-                        </p>
-                        <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
-                            Diagnóstico: {{ informe.diagnostico }}
-                        </p>
+                    <div class="mt-2 sm:flex sm:justify-between">
+                        <div class="sm:flex">
+                            <p class="flex items-center text-sm text-gray-500">
+                                DNI: {{ informe.dni_paciente }}
+                            </p>
+                            <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                                Diagnóstico: {{ informe.diagnostico }}
+                            </p>
+                        </div>
+                        <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                            <a href="{{ url_for('editar_informe', informe_id=informe.id) }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                Editar
+                            </a>
+                            <form action="{{ url_for('borrar_informe', informe_id=informe.id) }}" method="POST" class="ml-4">
+                                <button type="submit" class="font-medium text-red-600 hover:text-red-500">
+                                    Borrar
+                                </button>
+                            </form>
+                            <a href="{{ url_for('generar_pdf', informe_id=informe.id) }}" class="ml-4 font-medium text-green-600 hover:text-green-500">
+                                Generar PDF
+                            </a>
+                        </div>
                     </div>
-                    <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                        <a href="{{ url_for('editar_informe', informe_id=informe.id) }}" class="font-medium text-indigo-600 hover:text-indigo-500">
-                            Editar
-                        </a>
-                        <form action="{{ url_for('borrar_informe', informe_id=informe.id) }}" method="POST" class="ml-4">
-                            <button type="submit" class="font-medium text-red-600 hover:text-red-500">
-                                Borrar
-                            </button>
-                        </form>
-                        <a href="{{ url_for('generar_pdf', informe_id=informe.id) }}" class="ml-4 font-medium text-green-600 hover:text-green-500">
-                            Generar PDF
-                        </a>
-                    </div>
-                </div>
-            </li>
-            {% endfor %}
+                </li>
+                {% endfor %}
+            {% else %}
+                <li class="px-4 py-4 sm:px-6">
+                    <p class="text-sm font-medium text-gray-500">No se encontraron informes con el DNI proporcionado.</p>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </div>

@@ -89,14 +89,24 @@ def informe_medico():
     return render_template('informe_medico.html', nombre_medico=session['nombre_medico'])
 
 
-@app.route('/lista_informes')
+@app.route('/lista_informes', methods=['GET'])
 def lista_informes():
     if 'dni_medico' not in session:
         return redirect(url_for('login'))
 
-    # Obtener todos los informes del médico actual
-    informes = db_firestore.collection('informes').where(
-        'dni_medico', '==', session['dni_medico']).stream()
+    dni_paciente = request.args.get('dni_paciente', None)
+
+    # Obtener los informes del médico actual
+    informes_query = db_firestore.collection('informes').where(
+        'dni_medico', '==', session['dni_medico'])
+
+    # Si hay un DNI ingresado, filtrar los informes por DNI del paciente
+    if dni_paciente:
+        informes_query = informes_query.where(
+            'dni_paciente', '==', dni_paciente)
+
+    # Ejecutar la consulta y almacenar los informes
+    informes = informes_query.stream()
     lista_informes = [{**informe.to_dict(), 'id': informe.id}
                       for informe in informes]
 
