@@ -1,19 +1,19 @@
 {
   "medicos": {
     "12345678": {
-      "nombre": "Dr. Juan Pérez",
+      "nombre": "Juan Pérez",
       "especialidad": "Cardiología"
     },
     "87654321": {
-      "nombre": "Dra. Ana Gómez",
+      "nombre": "Ana Gómez",
       "especialidad": "Dermatología"
     },
     "73038275": {
-      "nombre": "Dr. Cesar Camero",
+      "nombre": "Cesar Camero",
       "especialidad": "Nutricionista"
     },
     "98765432": {
-      "nombre": "Dr. Juan Lizama",
+      "nombre": "Juan Lizama",
       "especialidad": "Odontología"
     }
   },

@@ -64,8 +64,11 @@ def informe_medico():
         tratamiento = request.form['tratamiento']
         informe_texto = request.form['informe']
 
+        # Generar un ID único para el informe
+        informe_id = f"{dni_paciente}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
         # Guardar el informe en Firestore
-        ref = db_firestore.collection('pacientes').document(dni_paciente)
+        ref = db_firestore.collection('informes').document(informe_id)
         ref.set({
             'dni_paciente': dni_paciente,
             'nombre_paciente': nombre_paciente,
@@ -92,7 +95,7 @@ def lista_informes():
         return redirect(url_for('login'))
 
     # Obtener todos los informes del médico actual
-    informes = db_firestore.collection('pacientes').where(
+    informes = db_firestore.collection('informes').where(
         'dni_medico', '==', session['dni_medico']).stream()
     lista_informes = [{**informe.to_dict(), 'id': informe.id}
                       for informe in informes]
@@ -100,12 +103,12 @@ def lista_informes():
     return render_template('lista_informes.html', informes=lista_informes)
 
 
-@app.route('/editar_informe/<string:dni_paciente>', methods=['GET', 'POST'])
-def editar_informe(dni_paciente):
+@app.route('/editar_informe/<string:informe_id>', methods=['GET', 'POST'])
+def editar_informe(informe_id):
     if 'nombre_medico' not in session:
         return redirect(url_for('login'))
 
-    ref = db_firestore.collection('pacientes').document(dni_paciente)
+    ref = db_firestore.collection('informes').document(informe_id)
     informe = ref.get()
 
     if not informe.exists:
@@ -124,15 +127,15 @@ def editar_informe(dni_paciente):
         flash('Informe actualizado exitosamente', 'success')
         return redirect(url_for('lista_informes'))
 
-    return render_template('editar_informe.html', informe=informe.to_dict(), dni_paciente=dni_paciente)
+    return render_template('editar_informe.html', informe=informe.to_dict(), informe_id=informe_id)
 
 
-@app.route('/borrar_informe/<string:dni_paciente>', methods=['POST'])
-def borrar_informe(dni_paciente):
+@app.route('/borrar_informe/<string:informe_id>', methods=['POST'])
+def borrar_informe(informe_id):
     if 'nombre_medico' not in session:
         return redirect(url_for('login'))
 
-    ref = db_firestore.collection('pacientes').document(dni_paciente)
+    ref = db_firestore.collection('informes').document(informe_id)
     informe = ref.get()
 
     if not informe.exists:
@@ -145,13 +148,13 @@ def borrar_informe(dni_paciente):
     return redirect(url_for('lista_informes'))
 
 
-@app.route('/generar_pdf/<string:dni_paciente>')
-def generar_pdf(dni_paciente):
+@app.route('/generar_pdf/<string:informe_id>')
+def generar_pdf(informe_id):
     if 'nombre_medico' not in session:
         return redirect(url_for('login'))
 
     # Obtener los datos del informe desde Firestore
-    ref = db_firestore.collection('pacientes').document(dni_paciente)
+    ref = db_firestore.collection('informes').document(informe_id)
     informe = ref.get()
 
     if not informe.exists:
@@ -181,7 +184,6 @@ def autocompletar_nombre():
         return jsonify({'nombre_paciente': nombre_paciente})
     else:
         return jsonify({'error': 'No se pudo autocompletar el nombre o DNI no encontrado'}), 400
-
 
 if __name__ == '__main__':
     app.run(debug=True)

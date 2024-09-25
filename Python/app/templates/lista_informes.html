@@ -32,15 +32,15 @@
                         </p>
                     </div>
                     <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                        <a href="{{ url_for('editar_informe', dni_paciente=informe.dni_paciente) }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                        <a href="{{ url_for('editar_informe', informe_id=informe.id) }}" class="font-medium text-indigo-600 hover:text-indigo-500">
                             Editar
                         </a>
-                        <form action="{{ url_for('borrar_informe', dni_paciente=informe.dni_paciente) }}" method="POST" class="ml-4">
+                        <form action="{{ url_for('borrar_informe', informe_id=informe.id) }}" method="POST" class="ml-4">
                             <button type="submit" class="font-medium text-red-600 hover:text-red-500">
                                 Borrar
                             </button>
                         </form>
-                        <a href="{{ url_for('generar_pdf', dni_paciente=informe.dni_paciente) }}" class="ml-4 font-medium text-green-600 hover:text-green-500">
+                        <a href="{{ url_for('generar_pdf', informe_id=informe.id) }}" class="ml-4 font-medium text-green-600 hover:text-green-500">
                             Generar PDF
                         </a>
                     </div>
