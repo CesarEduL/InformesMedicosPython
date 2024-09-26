@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Informe Médico{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Informe Médico</h1>
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <p class="mb-2"><strong class="font-semibold">Fecha:</strong> {{ informe.fecha }}</p>
+        <p class="mb-2"><strong class="font-semibold">Médico:</strong> {{ informe.medico }}</p>
+        <p class="mb-2"><strong class="font-semibold">Diagnóstico:</strong> {{ informe.diagnostico }}</p>
+        <p class="mb-4"><strong class="font-semibold">Tratamiento:</strong> {{ informe.tratamiento }}</p>
+        <h2 class="text-xl font-semibold mt-4 mb-2">Informe Detallado:</h2>
+        <p class="whitespace-pre-line">{{ informe.informe }}</p>
+    </div>
+    <a href="{{ url_for('patient_dashboard') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-block mt-4">
+        Volver al Dashboard
+    </a>
+</div>
+{% endblock %}

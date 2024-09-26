@@ -18,6 +18,12 @@ def verificar_dni_medico(dni):
     medico = ref.get()
     return medico
 
+# Función para verificar el DNI del paciente en Firebase
+def verificar_dni_paciente(dni):
+    ref = db.reference(f'pacientes/{dni}')
+    paciente = ref.get()
+    return paciente
+
 # Función para crear un usuario paciente en la Realtime Database
 def crear_paciente(dni, nombre):
     ref = db.reference('pacientes')

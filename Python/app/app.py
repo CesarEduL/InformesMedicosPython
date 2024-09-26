@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
-from modules.firebase_module import inicializar_firebase, obtener_firestore, verificar_dni_medico, crear_paciente
+from modules.firebase_module import inicializar_firebase, obtener_firestore, verificar_dni_medico, crear_paciente, verificar_dni_paciente
 from modules.api_module import cargar_token, obtener_nombre_paciente
 from modules.pdf_module import crear_pdf
 from datetime import datetime
+import json
 import os
 
 app = Flask(__name__)
@@ -18,24 +19,42 @@ API_TOKEN = cargar_token()
 
 @app.route('/')
 def index():
-    if 'nombre_medico' in session:
-        return redirect(url_for('dashboard'))
+    if 'user_type' in session:
+        if session['user_type'] == 'doctor':
+            return redirect(url_for('dashboard'))
+        elif session['user_type'] == 'patient':
+            return redirect(url_for('patient_dashboard'))
     return redirect(url_for('login'))
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login')
 def login():
+    return render_template('login.html')
+
+
+@app.route('/login/<user_type>', methods=['GET', 'POST'])
+def login_user(user_type):
     if request.method == 'POST':
         dni = request.form['dni']
-        medico = verificar_dni_medico(dni)
-        if medico:
-            session['nombre_medico'] = medico['nombre']
-            session['dni_medico'] = dni
-            flash('Inicio de sesión exitoso', 'success')
-            return redirect(url_for('dashboard'))
-        else:
-            flash('DNI no encontrado en el sistema', 'error')
-    return render_template('login.html')
+        if user_type == 'doctor':
+            user = verificar_dni_medico(dni)
+            if user:
+                session['user_type'] = 'doctor'
+                session['nombre_medico'] = user['nombre']
+                session['dni_medico'] = dni
+                flash('Inicio de sesión exitoso', 'success')
+                return redirect(url_for('dashboard'))
+        elif user_type == 'patient':
+            user = verificar_dni_paciente(dni)
+            if user:
+                session['user_type'] = 'patient'
+                session['nombre_paciente'] = user['nombre']
+                session['dni_paciente'] = dni
+                flash('Inicio de sesión exitoso', 'success')
+                return redirect(url_for('patient_dashboard'))
+
+        flash('DNI no encontrado en el sistema', 'error')
+    return render_template(f'login_{user_type}.html')
 
 
 @app.route('/logout')
@@ -45,11 +64,51 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/dashboard')
+@app.route('/doctor/dashboard')
 def dashboard():
-    if 'nombre_medico' not in session:
+    if 'user_type' not in session or session['user_type'] != 'doctor':
         return redirect(url_for('login'))
-    return render_template('dashboard.html', nombre_medico=session['nombre_medico'])
+    return render_template('doctor/dashboard.html', nombre_medico=session['nombre_medico'])
+
+
+@app.route('/patient_dashboard')
+def patient_dashboard():
+    if 'user_type' not in session or session['user_type'] != 'patient':
+        return redirect(url_for('login'))
+
+    dni_paciente = session['dni_paciente']
+    nombre_paciente = session['nombre_paciente']
+
+    # Obtener los informes médicos del paciente desde Firestore
+    informes_query = db_firestore.collection('informes').where(
+        'dni_paciente', '==', dni_paciente).stream()
+
+    informes = []
+    for informe in informes_query:
+        data = informe.to_dict()
+        informes.append({
+            'title': f"Informe médico",
+            'start': datetime.strptime(data['fecha'], '%d/%m/%Y %H:%M:%S').isoformat(),
+            'url': url_for('ver_informe', informe_id=informe.id)
+        })
+
+    informes_json = json.dumps(informes)
+
+    return render_template('patient/patient_dashboard.html', nombre_paciente=nombre_paciente, informes_json=informes_json)
+
+
+@app.route('/ver_informe/<string:informe_id>')
+def ver_informe(informe_id):
+    if 'user_type' not in session or session['user_type'] != 'patient':
+        return redirect(url_for('login'))
+
+    informe = db_firestore.collection('informes').document(informe_id).get()
+    if not informe.exists:
+        flash('Informe no encontrado', 'error')
+        return redirect(url_for('patient_dashboard'))
+
+    informe_data = informe.to_dict()
+    return render_template('patient/ver_informe.html', informe=informe_data)
 
 
 @app.route('/informe_medico', methods=['GET', 'POST'])
@@ -89,7 +148,7 @@ def informe_medico():
 
         return jsonify({'message': 'Informe guardado y paciente registrado exitosamente', 'pdf_file': pdf_file_name})
 
-    return render_template('informe_medico.html', nombre_medico=session['nombre_medico'])
+    return render_template('doctor/informe_medico.html', nombre_medico=session['nombre_medico'])
 
 
 @app.route('/lista_informes', methods=['GET'])
@@ -113,7 +172,7 @@ def lista_informes():
     lista_informes = [{**informe.to_dict(), 'id': informe.id}
                       for informe in informes]
 
-    return render_template('lista_informes.html', informes=lista_informes)
+    return render_template('doctor/lista_informes.html', informes=lista_informes)
 
 
 @app.route('/editar_informe/<string:informe_id>', methods=['GET', 'POST'])
@@ -140,7 +199,7 @@ def editar_informe(informe_id):
         flash('Informe actualizado exitosamente', 'success')
         return redirect(url_for('lista_informes'))
 
-    return render_template('editar_informe.html', informe=informe.to_dict(), informe_id=informe_id)
+    return render_template('doctor/editar_informe.html', informe=informe.to_dict(), informe_id=informe_id)
 
 
 @app.route('/borrar_informe/<string:informe_id>', methods=['POST'])
