@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
-from modules.firebase_module import inicializar_firebase, obtener_firestore, verificar_dni_medico
+from modules.firebase_module import inicializar_firebase, obtener_firestore, verificar_dni_medico, crear_paciente
 from modules.api_module import cargar_token, obtener_nombre_paciente
 from modules.pdf_module import crear_pdf
 from datetime import datetime
@@ -80,11 +80,14 @@ def informe_medico():
             'fecha': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
         })
 
+        # Crear el usuario del paciente en la Realtime Database
+        crear_paciente(dni_paciente, nombre_paciente)
+
         # Crear el PDF
         pdf_file_name = crear_pdf(dni_paciente, nombre_paciente, informe_texto,
                                   diagnostico, tratamiento, session['nombre_medico'])
 
-        return jsonify({'message': 'Informe guardado exitosamente', 'pdf_file': pdf_file_name})
+        return jsonify({'message': 'Informe guardado y paciente registrado exitosamente', 'pdf_file': pdf_file_name})
 
     return render_template('informe_medico.html', nombre_medico=session['nombre_medico'])
 

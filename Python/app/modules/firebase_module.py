@@ -17,3 +17,12 @@ def verificar_dni_medico(dni):
     ref = db.reference(f'medicos/{dni}')
     medico = ref.get()
     return medico
+
+# Función para crear un usuario paciente en la Realtime Database
+def crear_paciente(dni, nombre):
+    ref = db.reference('pacientes')
+    paciente_ref = ref.child(dni)
+    paciente_ref.set({
+        'nombre': nombre,
+        'dni': dni
+    })
