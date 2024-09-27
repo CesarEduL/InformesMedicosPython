@@ -24,6 +24,12 @@ def verificar_dni_paciente(dni):
     paciente = ref.get()
     return paciente
 
+# Función para verificar el DNI del administrador en Firebase
+def verificar_dni_admin(dni):
+    ref = db.reference(f'directivos/{dni}')
+    admin = ref.get()
+    return admin
+
 # Función para crear un usuario paciente en la Realtime Database
 def crear_paciente(dni, nombre):
     ref = db.reference('pacientes')
@@ -32,3 +38,55 @@ def crear_paciente(dni, nombre):
         'nombre': nombre,
         'dni': dni
     })
+
+#Funciones admin
+
+
+def get_all_patients():
+    ref = db.reference('pacientes')
+    return ref.get()
+
+
+def get_patient(dni):
+    ref = db.reference(f'pacientes/{dni}')
+    return ref.get()
+
+
+def update_patient(dni, nombre):
+    ref = db.reference(f'pacientes/{dni}')
+    ref.update({'nombre': nombre})
+
+
+def delete_patient_by_dni(dni):
+    ref = db.reference(f'pacientes/{dni}')
+    ref.delete()
+
+
+def get_all_doctors():
+    ref = db.reference('medicos')
+    return ref.get()
+
+
+def get_doctor(dni):
+    ref = db.reference(f'medicos/{dni}')
+    return ref.get()
+
+
+def crear_medico(dni, nombre, especialidad):
+    ref = db.reference('medicos')
+    medico_ref = ref.child(dni)
+    medico_ref.set({
+        'nombre': nombre,
+        'dni': dni,
+        'especialidad': especialidad
+    })
+
+
+def update_doctor(dni, nombre, especialidad):
+    ref = db.reference(f'medicos/{dni}')
+    ref.update({'nombre': nombre, 'especialidad': especialidad})
+
+
+def delete_doctor_by_dni(dni):
+    ref = db.reference(f'medicos/{dni}')
+    ref.delete()

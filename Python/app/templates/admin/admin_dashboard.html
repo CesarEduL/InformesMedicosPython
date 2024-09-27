@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex flex-col">
+        <header class="bg-purple-600 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Panel de Administración</h1>
+                <div>
+                    <span class="mr-4">Bienvenido, {{ nombre_admin }}</span>
+                    <a href="{{ url_for('logout') }}" class="bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded">Cerrar Sesión</a>
+                </div>
+            </div>
+        </header>
+        
+        <main class="flex-grow container mx-auto mt-8 px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <a href="{{ url_for('admin_manage_patients') }}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                    <h2 class="text-xl font-semibold mb-4"><i class="fas fa-users mr-2"></i>Gestionar Pacientes</h2>
+                    <p class="text-gray-600">Agregar, editar o eliminar información de pacientes.</p>
+                </a>
+                <a href="{{ url_for('admin_manage_doctors') }}" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                    <h2 class="text-xl font-semibold mb-4"><i class="fas fa-user-md mr-2"></i>Gestionar Doctores</h2>
+                    <p class="text-gray-600">Agregar, editar o eliminar información de doctores.</p>
+                </a>
+            </div>
+        </main>
+        
+        <footer class="bg-gray-200 text-center p-4 mt-8">
+            <p>&copy; 2024 Sistema de Gestión Médica. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+</body>
+</html>

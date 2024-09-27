@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
-from modules.firebase_module import inicializar_firebase, obtener_firestore, verificar_dni_medico, crear_paciente, verificar_dni_paciente
+from modules.firebase_module import inicializar_firebase, obtener_firestore, verificar_dni_medico, crear_paciente, verificar_dni_paciente, verificar_dni_admin, get_all_patients, get_all_doctors, get_patient, update_patient, delete_patient_by_dni, crear_medico, get_doctor, update_doctor, delete_doctor_by_dni
 from modules.api_module import cargar_token, obtener_nombre_paciente
 from modules.pdf_module import crear_pdf
 from datetime import datetime
@@ -24,6 +24,8 @@ def index():
             return redirect(url_for('dashboard'))
         elif session['user_type'] == 'patient':
             return redirect(url_for('patient_dashboard'))
+        elif session['user_type'] == 'admin':
+            return redirect(url_for('admin_dashboard'))
     return redirect(url_for('login'))
 
 
@@ -52,6 +54,14 @@ def login_user(user_type):
                 session['dni_paciente'] = dni
                 flash('Inicio de sesión exitoso', 'success')
                 return redirect(url_for('patient_dashboard'))
+        elif user_type == 'admin':
+            user = verificar_dni_admin(dni)
+            if user:
+                session['user_type'] = 'admin'
+                session['nombre_admin'] = user['nombre']
+                session['dni_admin'] = dni
+                flash('Inicio de sesión exitoso', 'success')
+                return redirect(url_for('admin_dashboard'))
 
         flash('DNI no encontrado en el sistema', 'error')
     return render_template(f'login_{user_type}.html')
@@ -63,6 +73,12 @@ def logout():
     flash('Has cerrado sesión correctamente', 'success')
     return redirect(url_for('login'))
 
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    return render_template('admin/admin_dashboard.html', nombre_admin=session['nombre_admin'])
 
 @app.route('/doctor/dashboard')
 def dashboard():
@@ -96,6 +112,93 @@ def patient_dashboard():
 
     return render_template('patient/patient_dashboard.html', nombre_paciente=nombre_paciente, informes_json=informes_json)
 
+
+@app.route('/admin/manage_patients')
+def admin_manage_patients():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    patients = get_all_patients()
+    return render_template('admin/manage_patients.html', patients=patients)
+
+
+@app.route('/admin/manage_doctors')
+def admin_manage_doctors():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    doctors = get_all_doctors()
+    return render_template('admin/manage_doctors.html', doctors=doctors)
+
+
+@app.route('/admin/add_patient', methods=['GET', 'POST'])
+def add_patient():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        dni = request.form['dni']
+        nombre = request.form['nombre']
+        crear_paciente(dni, nombre)
+        flash('Paciente agregado exitosamente', 'success')
+        return redirect(url_for('admin_manage_patients'))
+    return render_template('admin/add_patient.html')
+
+
+@app.route('/admin/edit_patient/<string:dni>', methods=['GET', 'POST'])
+def edit_patient(dni):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    patient = get_patient(dni)
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        update_patient(dni, nombre)
+        flash('Paciente actualizado exitosamente', 'success')
+        return redirect(url_for('admin_manage_patients'))
+    return render_template('admin/edit_patient.html', patient=patient)
+
+
+@app.route('/admin/delete_patient/<string:dni>', methods=['POST'])
+def delete_patient(dni):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    delete_patient_by_dni(dni)
+    flash('Paciente eliminado exitosamente', 'success')
+    return redirect(url_for('admin_manage_patients'))
+
+
+@app.route('/admin/add_doctor', methods=['GET', 'POST'])
+def add_doctor():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        dni = request.form['dni']
+        nombre = request.form['nombre']
+        especialidad = request.form['especialidad']
+        crear_medico(dni, nombre, especialidad)
+        flash('Médico agregado exitosamente', 'success')
+        return redirect(url_for('admin_manage_doctors'))
+    return render_template('admin/add_doctor.html')
+
+
+@app.route('/admin/edit_doctor/<string:dni>', methods=['GET', 'POST'])
+def edit_doctor(dni):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    doctor = get_doctor(dni)
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        especialidad = request.form['especialidad']
+        update_doctor(dni, nombre, especialidad)
+        flash('Médico actualizado exitosamente', 'success')
+        return redirect(url_for('admin_manage_doctors'))
+    return render_template('admin/edit_doctor.html', doctor=doctor)
+
+
+@app.route('/admin/delete_doctor/<string:dni>', methods=['POST'])
+def delete_doctor(dni):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login'))
+    delete_doctor_by_dni(dni)
+    flash('Médico eliminado exitosamente', 'success')
+    return redirect(url_for('admin_manage_doctors'))
 
 @app.route('/ver_informe/<string:informe_id>')
 def ver_informe(informe_id):
