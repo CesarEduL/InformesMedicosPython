@@ -1,12 +1,20 @@
 import firebase_admin
 from firebase_admin import credentials, db, firestore
+import os
 
 # Inicializar Firebase con el archivo de credenciales
 def inicializar_firebase():
-    cred = credentials.Certificate("app/config/firebase_config.json")
-    firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://informesmedicos-aacda-default-rtdb.firebaseio.com/'
-    })
+    rutas = ['/etc/secrets/firebase_config.json',
+             'app/config/firebase_config.json']
+    for ruta in rutas:
+        if os.path.exists(ruta):
+            cred = credentials.Certificate(ruta)
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': 'https://informesmedicos-aacda-default-rtdb.firebaseio.com/'
+            })
+            return
+    raise FileNotFoundError(
+        "No se pudo encontrar el archivo firebase_config.json")
 
 # Inicializar Firestore
 def obtener_firestore():
