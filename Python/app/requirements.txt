@@ -1,4 +1,6 @@
 Flask
+python-dotenv
 firebase-admin
 requests
 fpdf
+gunicorn

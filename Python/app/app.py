@@ -7,14 +7,14 @@ import json
 import os
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
 # Inicializar Firebase y Firestore
 inicializar_firebase()
 db_firestore = obtener_firestore()
 
 # Cargar token API
-API_TOKEN = cargar_token()
+API_TOKEN = os.environ.get('API_TOKEN', cargar_token())
 
 
 @app.route('/')
@@ -361,4 +361,5 @@ def autocompletar_nombre():
         return jsonify({'error': 'No se pudo autocompletar el nombre o DNI no encontrado'}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
